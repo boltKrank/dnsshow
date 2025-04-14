@@ -1,2 +1,6 @@
-# dns_show
-Extra info on DNS commands
+# DNSSHOW
+Extra info on DNS commands emphasizing the education aspect
+
+TODO:
+
+1. Packet content breakdown

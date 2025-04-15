@@ -67,6 +67,28 @@ func getAnswer(reply *dns.Msg) net.IP {
 			return record.(*dns.A).A
 		}
 	}
+
+	// ANSWER PRINT:
+	// fmt.Println("\n\n--- ANSWER   ---")
+	// answer := message.Answer
+	// fmt.Printf("\nanswer: %v\n", answer)
+
+	// fmt.Printf("\n0                                            15")
+	// fmt.Printf("\n+---------------------------------------------+")
+	// fmt.Printf("\n|                    NAME                     |")
+	// fmt.Printf("\n+---------------------------------------------|")
+	// fmt.Printf("\n|                    TYPE                     |")
+	// fmt.Printf("\n+---------------------------------------------|")
+	// fmt.Printf("\n|                    CLASS                    |")
+	// fmt.Printf("\n+---------------------------------------------|")
+	// fmt.Printf("\n|                     TTL                     |")
+	// fmt.Printf("\n+---------------------------------------------|")
+	// fmt.Printf("\n|                   RDLENGTH                  |")
+	// fmt.Printf("\n+---------------------------------------------|")
+	// fmt.Printf("\n|                     RDATA                   |")
+	// fmt.Printf("\n+---------------------------------------------+")
+	// fmt.Printf("\n\n\n")
+
 	return nil
 }
 
@@ -246,25 +268,6 @@ func populateDiagram(message *dns.Msg) {
 	// // fmt.Printf("\nquestio[0]: %v\n", &question)
 	// // fmt.Printf("\nquestio[0]: %v\n", &question)
 	// // fmt.Printf("\nquestio[0]: %v\n", &question)
-	// fmt.Println("\n\n--- ANSWER   ---")
-	// answer := message.Answer
-	// fmt.Printf("\nanswer: %v\n", answer)
-
-	// fmt.Printf("\n0                                            15")
-	// fmt.Printf("\n+---------------------------------------------+")
-	// fmt.Printf("\n|                    NAME                     |")
-	// fmt.Printf("\n+---------------------------------------------|")
-	// fmt.Printf("\n|                    TYPE                     |")
-	// fmt.Printf("\n+---------------------------------------------|")
-	// fmt.Printf("\n|                    CLASS                    |")
-	// fmt.Printf("\n+---------------------------------------------|")
-	// fmt.Printf("\n|                     TTL                     |")
-	// fmt.Printf("\n+---------------------------------------------|")
-	// fmt.Printf("\n|                   RDLENGTH                  |")
-	// fmt.Printf("\n+---------------------------------------------|")
-	// fmt.Printf("\n|                     RDATA                   |")
-	// fmt.Printf("\n+---------------------------------------------+")
-	// fmt.Printf("\n\n\n")
 
 	// fmt.Println("---   NS     ---")
 	// fmt.Printf("\n\n\n")

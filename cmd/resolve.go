@@ -1,5 +1,5 @@
 /*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
+Cheers SIMON ANDERSON <simon@boltkrank.com>
 */
 package cmd
 
@@ -88,24 +88,146 @@ func getNS(reply *dns.Msg) string {
 }
 
 func dnsQuery(name string, server net.IP) *dns.Msg {
-	fmt.Printf("dig -r @%s %s\n", server.String(), name)
+	fmt.Printf("Checking %s %s\n", server.String(), name)
 	msg := new(dns.Msg)
 	msg.SetQuestion(name, dns.TypeA)
+
+	populateDiagram(msg)
+
 	c := new(dns.Client)
 	reply, _, _ := c.Exchange(msg, server.String()+":53")
 	return reply
 }
 
+func boolToString(b bool) string {
+	if b {
+		return "1"
+	}
+	return "0"
+}
+
+func populateDiagram(message *dns.Msg) {
+
+	// fmt.Println("Message being genrated as: ")
+	// fmt.Println("Populated, this is")
+	// fmt.Println("            --------HEADER--------               ")
+	// fmt.Println("                              1  1  1  1  1  1")
+	// fmt.Println("0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5")
+	// fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+	// fmt.Println("|                      ID                       |")
+	// fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+	// fmt.Println("|QR|   OpCode  |AA|TC|RD|RA| Z|AD|CD|   RCODE   |")
+	// fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+	// fmt.Println("|                QDCOUNT/ZOCOUNT                |")
+	// fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+	// fmt.Println("|                ANCOUNT/PRCOUNT                |")
+	// fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+	// fmt.Println("|                NSCOUNT/UPCOUNT                |")
+	// fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+	// fmt.Println("|                    ARCOUNT                    |")
+	// fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+
+	// Compressed ?
+	compressed := boolToString(message.Compress)
+	fmt.Printf("\ncompressed: %s\n", compressed)
+
+	// ID
+	id := message.MsgHdr.Id
+	fmt.Printf("\nID: %d\n", id)
+
+	// QR
+	response := boolToString(message.MsgHdr.Response)
+	fmt.Printf("\nQR: %s\n", response)
+
+	// OpCode
+	opCode := message.MsgHdr.Opcode
+	fmt.Printf("\nopCode: %d\n", opCode)
+
+	// AA
+	authoritative := boolToString(message.MsgHdr.Authoritative)
+	fmt.Printf("\nAuthoritative: %s\n", authoritative)
+
+	// TC
+	truncated := boolToString(message.MsgHdr.Truncated)
+	fmt.Printf("\ntruncated: %s\n", truncated)
+
+	// RD
+	recursionDesired := boolToString(message.MsgHdr.RecursionDesired)
+	fmt.Printf("\nrecursionDesired: %s\n", recursionDesired)
+
+	// RA
+	recursionAvailable := boolToString(message.MsgHdr.RecursionAvailable)
+	fmt.Printf("\nrecursionAvailable: %s\n", recursionAvailable)
+
+	// Z
+	zero := boolToString(message.MsgHdr.Zero)
+	fmt.Printf("\nzero: %s", zero)
+
+	// AD
+	authenticatedData := boolToString(message.MsgHdr.AuthenticatedData)
+	fmt.Printf("\nauthenticatedData: %s\n", authenticatedData)
+
+	// CD
+	checkingDisabled := boolToString(message.MsgHdr.CheckingDisabled)
+	fmt.Printf("\ncheckingDisabled: %s", checkingDisabled)
+
+	// RCODE
+	rcode := message.MsgHdr.Rcode
+	fmt.Printf("\nrcode: %d\n", rcode)
+
+	// QDCOUNT/ZOCOUNT
+
+	// NSCOUNT/UPCOUNT
+	// ARCOUNT
+
+	fmt.Printf("\nQuestion: %v\n", message.Question)
+	fmt.Printf("\nAnswer: %v\n", message.Answer)
+	fmt.Printf("Ns: %v\n", message.Ns)
+	fmt.Printf("\nExtra: %v", message.Extra)
+	fmt.Println("\n\n ")
+
+	// QDCOUNT
+	qdcount := uint16(len(message.Question))
+	fmt.Printf("\nqdcount: %d\n", qdcount)
+
+	ancount := uint16(len(message.Answer))
+	fmt.Printf("\nqdcount: %d\n", ancount)
+
+	nscount := uint16(len(message.Ns))
+	fmt.Printf("\nqdcount: %d\n", nscount)
+
+	arcount := uint16(len(message.Extra))
+	fmt.Printf("\nqdcount: %d\n", arcount)
+
+	fmt.Println("--- MESSAGE HEADER ---")
+
+	fmt.Println("                              1  1  1  1  1  1")
+	fmt.Println("0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5")
+	fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+	fmt.Printf("|                      %d                    |\n", id)
+	fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+	// fmt.Println("|QR|   OpCode  |AA|TC|RD|RA| Z|AD|CD|   RCODE     |")
+	fmt.Printf("| %s |    %d      | %s| %s| %s| %s| %s| %s| %s|     %d    |\n",
+		response, opCode, authoritative, truncated, recursionDesired, recursionAvailable, zero,
+		authenticatedData, checkingDisabled, rcode)
+	fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+	fmt.Printf("|                      %d                        |\n", qdcount)
+	fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+	fmt.Printf("|                      %d                        |\n", ancount)
+	fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+	fmt.Printf("|                      %d                        |\n", nscount)
+	fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+	fmt.Printf("|                      %d                        |\n", arcount)
+	fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+
+	fmt.Println("--- QUESTION ---")
+
+}
+
 func init() {
 	rootCmd.AddCommand(resolveCmd)
 
-	// Here you will define your flags and configuration settings.
+	// TODO
+	// Add parameter flags here
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// resolveCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// resolveCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

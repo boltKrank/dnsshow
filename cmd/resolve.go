@@ -37,8 +37,11 @@ func resolve(name string) net.IP {
 	nameserver := net.ParseIP("198.41.0.4")
 
 	for {
+
+		// We always start with the root server ("represented by the . at the end of the address, or in this case - the IP")
 		reply := dnsQuery(name, nameserver)
 
+		// If we get a properly formed reply we don't need to go further (this reply might be from cache, or somewhere else - we don't care with the client)
 		if ip := getAnswer(reply); ip != nil {
 			// Best case: we get an answer to our query and we're done
 			return ip
@@ -90,7 +93,9 @@ func getNS(reply *dns.Msg) string {
 func dnsQuery(name string, server net.IP) *dns.Msg {
 	fmt.Printf("Checking %s %s\n", server.String(), name)
 	msg := new(dns.Msg)
+	fmt.Printf("\n msg is: %v", msg)
 	msg.SetQuestion(name, dns.TypeA)
+	fmt.Printf("\n msg is now: %v", msg)
 
 	populateDiagram(msg)
 
@@ -126,6 +131,8 @@ func populateDiagram(message *dns.Msg) {
 	// fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
 	// fmt.Println("|                    ARCOUNT                    |")
 	// fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+
+	fmt.Printf("\n msmessage g is now: %v", message)
 
 	// Compressed ?
 	compressed := boolToString(message.Compress)
@@ -180,7 +187,8 @@ func populateDiagram(message *dns.Msg) {
 	// NSCOUNT/UPCOUNT
 	// ARCOUNT
 
-	fmt.Printf("\nQuestion: %v\n", message.Question)
+	fmt.Printf("\nQuestion:\n")
+	fmt.Print(message.Question)
 	fmt.Printf("\nAnswer: %v\n", message.Answer)
 	fmt.Printf("Ns: %v\n", message.Ns)
 	fmt.Printf("\nExtra: %v", message.Extra)
@@ -221,6 +229,52 @@ func populateDiagram(message *dns.Msg) {
 	fmt.Println("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
 
 	fmt.Println("--- QUESTION ---")
+	//message.Question
+
+	fmt.Println("+---------------------------------------------+")
+	fmt.Println("| QNAME                                       |")
+	fmt.Println("+---------------------------------------------|")
+	fmt.Println("| QTYPE                                       |")
+	fmt.Println("+---------------------------------------------|")
+	fmt.Println("| QCLASS                                      |")
+	fmt.Println("+---------------------------------------------+")
+
+	question := message.Question
+	fmt.Printf("\nquestion: %v\n", &question)
+	fmt.Printf("\nquestion.length: %d", len(question))
+
+	// // fmt.Printf("\nquestio[0]: %v\n", &question)
+	// // fmt.Printf("\nquestio[0]: %v\n", &question)
+	// // fmt.Printf("\nquestio[0]: %v\n", &question)
+	// fmt.Println("\n\n--- ANSWER   ---")
+	// answer := message.Answer
+	// fmt.Printf("\nanswer: %v\n", answer)
+
+	// fmt.Printf("\n0                                            15")
+	// fmt.Printf("\n+---------------------------------------------+")
+	// fmt.Printf("\n|                    NAME                     |")
+	// fmt.Printf("\n+---------------------------------------------|")
+	// fmt.Printf("\n|                    TYPE                     |")
+	// fmt.Printf("\n+---------------------------------------------|")
+	// fmt.Printf("\n|                    CLASS                    |")
+	// fmt.Printf("\n+---------------------------------------------|")
+	// fmt.Printf("\n|                     TTL                     |")
+	// fmt.Printf("\n+---------------------------------------------|")
+	// fmt.Printf("\n|                   RDLENGTH                  |")
+	// fmt.Printf("\n+---------------------------------------------|")
+	// fmt.Printf("\n|                     RDATA                   |")
+	// fmt.Printf("\n+---------------------------------------------+")
+	// fmt.Printf("\n\n\n")
+
+	// fmt.Println("---   NS     ---")
+	// fmt.Printf("\n\n\n")
+	// ns := message.Ns
+	// fmt.Printf("\nns: %v\n", ns)
+	// fmt.Println("---  EXTRA   ---")
+	// fmt.Printf("\n\n\n")
+	// extra := message.Extra
+	// fmt.Printf("\nextra: %v\n", extra)
+	// fmt.Printf("\n\n\n")
 
 }
 
@@ -229,5 +283,6 @@ func init() {
 
 	// TODO
 	// Add parameter flags here
+	// i.e. change root server, or filter the outputs.
 
 }
